@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { FileUpload } from './FileUpload'
+import { AICategorization } from './AICategorization'
+import { MarkdownEditor } from '../markdown/MarkdownEditor'
 import { Document, Category } from '@/types/database'
 import { createDocument, updateDocument, getCategories } from '@/lib/supabase/client'
+import { parseMarkdown, generateSummary } from '@/lib/markdown/parser'
 import { 
   Save, 
   Eye, 
@@ -12,7 +16,9 @@ import {
   Tag, 
   Folder,
   X,
-  Plus
+  Plus,
+  Upload,
+  Brain
 } from 'lucide-react'
 
 interface DocumentEditorProps {
@@ -36,6 +42,8 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
+  const [showFileUpload, setShowFileUpload] = useState(false)
+  const [showAICategorization, setShowAICategorization] = useState(false)
 
   useEffect(() => {
     loadCategories()
@@ -48,6 +56,67 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
     } catch (error) {
       console.error('Error loading categories:', error)
     }
+  }
+
+  const handleFileUpload = (file: File, fileContent: string) => {
+    try {
+      // Parse markdown content
+      const parsed = parseMarkdown(fileContent)
+      
+      // Auto-fill form with parsed data
+      if (parsed.metadata.title && !title) {
+        setTitle(parsed.metadata.title)
+      }
+      
+      if (parsed.metadata.description && !summary) {
+        setSummary(parsed.metadata.description)
+      }
+      
+      if (parsed.metadata.tags && parsed.metadata.tags.length > 0) {
+        setTags([...new Set([...tags, ...parsed.metadata.tags])])
+      }
+      
+      if (parsed.metadata.category && !categoryId) {
+        const matchingCategory = categories.find(cat => 
+          cat.name.toLowerCase() === parsed.metadata.category?.toLowerCase()
+        )
+        if (matchingCategory) {
+          setCategoryId(matchingCategory.id)
+        }
+      }
+      
+      // Set content
+      setContent(parsed.content)
+      
+      // Auto-generate summary if not provided
+      if (!summary && parsed.content) {
+        setSummary(generateSummary(parsed.content))
+      }
+      
+      // Hide file upload after successful upload
+      setShowFileUpload(false)
+      
+    } catch (error) {
+      console.error('Error parsing markdown file:', error)
+      alert('Failed to parse markdown file')
+    }
+  }
+
+  const handleAICategorySelect = (categoryName: string) => {
+    const matchingCategory = categories.find(cat => 
+      cat.name.toLowerCase() === categoryName.toLowerCase()
+    )
+    if (matchingCategory) {
+      setCategoryId(matchingCategory.id)
+    }
+  }
+
+  const handleAITagsSelect = (aiTags: string[]) => {
+    setTags([...new Set([...tags, ...aiTags])])
+  }
+
+  const handleAISummarySelect = (aiSummary: string) => {
+    setSummary(aiSummary)
   }
 
   const handleSave = async () => {
@@ -127,6 +196,22 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
+            onClick={() => setShowFileUpload(!showFileUpload)}
+            className="flex items-center gap-2"
+          >
+            <Upload className="w-4 h-4" />
+            Upload File
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowAICategorization(!showAICategorization)}
+            className="flex items-center gap-2"
+          >
+            <Brain className="w-4 h-4" />
+            AI Analysis
+          </Button>
+          <Button
+            variant="outline"
             onClick={() => setIsPreview(!isPreview)}
             className="flex items-center gap-2"
           >
@@ -151,6 +236,25 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
           </Button>
         </div>
       </div>
+
+      {/* File Upload */}
+      {showFileUpload && (
+        <FileUpload 
+          onFileUpload={handleFileUpload}
+          maxFileSize={10 * 1024 * 1024} // 10MB
+          acceptedTypes={['text/markdown', 'text/plain', '.md', '.txt']}
+        />
+      )}
+
+      {/* AI Categorization */}
+      {showAICategorization && (
+        <AICategorization 
+          content={content}
+          onCategorySelect={handleAICategorySelect}
+          onTagsSelect={handleAITagsSelect}
+          onSummarySelect={handleAISummarySelect}
+        />
+      )}
 
       {/* Document Form */}
       <Card>
@@ -275,17 +379,13 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
                   <FileText className="w-4 h-4 inline mr-1" />
                   Content (Markdown)
                 </label>
-                <textarea
+                <MarkdownEditor
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={setContent}
                   placeholder="Write your document in markdown..."
-                  rows={20}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                  height="500px"
+                  showPreview={true}
                 />
-                <div className="mt-2 text-sm text-gray-500">
-                  {content.split(/\s+/).filter((word: string) => word.length > 0).length} words • 
-                  {Math.ceil(content.split(/\s+/).filter((word: string) => word.length > 0).length / 200)} min read
-                </div>
               </div>
             </div>
           )}
