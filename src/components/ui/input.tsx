@@ -7,6 +7,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   helperText?: string
   startIcon?: React.ReactNode
   endIcon?: React.ReactNode
+  leftIcon?: React.ReactNode
 }
 
 /**
@@ -26,7 +27,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     error, 
     helperText, 
     startIcon, 
-    endIcon, 
+    endIcon,
+    leftIcon,
     id,
     ...props 
   }, ref) => {
@@ -34,9 +36,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const errorId = error ? `${inputId}-error` : undefined
     const helperId = helperText ? `${inputId}-helper` : undefined
     
+    const iconToUse = leftIcon || startIcon
+    
     const inputClasses = cn(
       'w-full px-4 py-3 rounded-lg border-2 text-gray-900 placeholder:text-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-      startIcon && 'pl-12',
+      iconToUse && 'pl-12',
       endIcon && 'pr-12',
       error 
         ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
@@ -56,9 +60,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         
         <div className="relative">
-          {startIcon && (
+          {iconToUse && (
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <span className="text-gray-400">{startIcon}</span>
+              <span className="text-gray-400">{iconToUse}</span>
             </div>
           )}
           

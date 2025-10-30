@@ -22,22 +22,30 @@ export default function Home() {
 
       {/* Header */}
       <header className="bg-white border-b border-neutral-200">
-        <div className="container mx-auto px-6 py-4">
-          <nav className="flex items-center justify-between">
+        <nav className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
+          <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-2">
               <FileText className="w-8 h-8 text-primary-600" />
               <h1 className="text-2xl font-bold text-neutral-900">MDReader</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" asChild>
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/signup">Get Started</Link>
-              </Button>
+            <div className="hidden md:flex items-center space-x-6">
+              <Link href="/dashboard" className="text-neutral-600 hover:text-primary-600 font-medium">
+                Dashboard
+              </Link>
+              <Link href="#features" className="text-neutral-600 hover:text-primary-600 font-medium">
+                Features
+              </Link>
             </div>
-          </nav>
-        </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" asChild>
+              <Link href="/login">Login</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/signup">Get Started</Link>
+            </Button>
+          </div>
+        </nav>
       </header>
 
       {/* Main Content */}

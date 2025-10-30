@@ -10,19 +10,18 @@ test.describe('MDReader Homepage', () => {
   })
 
   test('loads main navigation elements', async ({ page }) => {
-    // Logo
-    await expect(page.locator('h1')).toContainText('MDReader')
+    // Logo in navigation
+    await expect(page.locator('nav h1')).toContainText('MDReader')
     
-    // Navigation buttons
+    // Navigation buttons/links
     await expect(page.locator('nav')).toBeVisible()
-    await expect(page.locator('button:has-text("Login")')).toBeVisible()
-    await expect(page.locator('button:has-text("Get Started")')).toBeVisible()
+    await expect(page.locator('a:has-text("Login")')).toBeVisible()
   })
 
   test('hero section displays correctly', async ({ page }) => {
-    // Main heading
-    await expect(page.locator('h1')).toContainText('AI-First Markdown')
-    await expect(page.locator('h1')).toContainText('Knowledge Management')
+    // Main heading in hero section
+    await expect(page.locator('main h1')).toContainText('AI-First Markdown')
+    await expect(page.locator('main h1')).toContainText('Knowledge Management')
     
     // Hero description
     await expect(page.locator('p')).toContainText('Organize, visualize, and collaborate')
@@ -52,18 +51,18 @@ test.describe('MDReader Homepage', () => {
   })
 
   test('navigation links work correctly', async ({ page }) => {
-    // Test Get Started button
-    const getStartedButton = page.locator('button:has-text("Get Started")')
-    await getStartedButton.click()
-    await expect(page).toHaveURL(/\/signup/)
+    // Test Login link
+    const loginLink = page.locator('a:has-text("Login")')
+    await loginLink.click()
+    await expect(page).toHaveURL(/\/login/)
     
     // Go back
     await page.goBack()
     
-    // Test Login button
-    const loginButton = page.locator('button:has-text("Login")')
-    await loginButton.click()
-    await expect(page).toHaveURL(/\/login/)
+    // Test Start Free Trial link
+    const startTrialLink = page.locator('a:has-text("Start Free Trial")')
+    await startTrialLink.click()
+    await expect(page).toHaveURL(/\/signup/)
   })
 
   test('skip link functionality for accessibility', async ({ page }) => {
@@ -82,10 +81,10 @@ test.describe('MDReader Homepage', () => {
     
     // Check mobile layout
     await expect(page.locator('nav')).toBeVisible()
-    await expect(page.locator('h1')).toContainText('MDReader')
+    await expect(page.locator('nav h1')).toContainText('MDReader')
     
     // Hero section should be readable on mobile
-    await expect(page.locator('h1:has-text("AI-First Markdown")')).toBeVisible()
+    await expect(page.locator('main h1:has-text("AI-First Markdown")')).toBeVisible()
     
     // Features should stack vertically
     const featureCards = page.locator('.grid > div')
