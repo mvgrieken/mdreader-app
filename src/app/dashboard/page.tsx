@@ -66,3 +66,6 @@ export default function DashboardPage() {
     </div>
   )
 }
+
+// Force dynamic rendering for dashboard
+export const dynamic = 'force-dynamic'
