@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import { Card, CardContent, CardHeader } from './card'
 import { cn } from '@/lib/utils/cn'

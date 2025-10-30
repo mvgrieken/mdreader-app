@@ -20,9 +20,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:unit": "jest --testPathPattern=tests/unit",
+    "test:integration": "jest --testPathPattern=tests/integration",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
     "build:analyze": "ANALYZE=true next build",
     "build:production": "NODE_ENV=production next build",
     "db:generate": "supabase gen types typescript --project-id=\"$SUPABASE_PROJECT_ID\" > src/lib/database.types.ts",
@@ -56,6 +59,7 @@
     "remark-gfm": "^4.0.1",
     "remark-rehype": "^11.1.2",
     "tailwind-merge": "^3.3.1",
+    "web-vitals": "^5.1.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
