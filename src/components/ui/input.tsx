@@ -35,10 +35,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const helperId = helperText ? `${inputId}-helper` : undefined
     
     const inputClasses = cn(
-      'input-base',
+      'w-full px-4 py-3 rounded-lg border-2 text-gray-900 placeholder:text-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
       startIcon && 'pl-12',
       endIcon && 'pr-12',
-      error && 'border-error-500 focus:border-error-500 focus:ring-error-200',
+      error 
+        ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
+        : 'border-gray-300 focus:border-blue-500',
       className
     )
     
@@ -47,7 +49,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label 
             htmlFor={inputId}
-            className="block text-sm font-medium text-neutral-700"
+            className="block text-sm font-medium text-gray-700"
           >
             {label}
           </label>
@@ -56,7 +58,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div className="relative">
           {startIcon && (
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <span className="text-neutral-400">{startIcon}</span>
+              <span className="text-gray-400">{startIcon}</span>
             </div>
           )}
           
@@ -72,7 +74,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           
           {endIcon && (
             <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-              <span className="text-neutral-400">{endIcon}</span>
+              <span className="text-gray-400">{endIcon}</span>
             </div>
           )}
         </div>
@@ -80,7 +82,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {error && (
           <p 
             id={errorId}
-            className="text-sm text-error-600 font-medium"
+            className="text-sm text-red-600 font-medium"
             role="alert"
           >
             {error}
@@ -90,7 +92,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {helperText && !error && (
           <p 
             id={helperId}
-            className="text-sm text-neutral-500"
+            className="text-sm text-gray-500"
           >
             {helperText}
           </p>
