@@ -2,17 +2,19 @@ import { createBrowserClient } from '@supabase/ssr'
 import type { Database } from '@/types/database'
 
 export function createClient() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    throw new Error('Missing Supabase environment variables')
+  }
+  
   return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 }
 
-// Supabase client for client-side operations
-export const supabase = createClient()
-
 // Helper functions for common operations
 export const createDocument = async (document: Database['public']['Tables']['documents']['Insert']) => {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('documents')
     .insert(document)
@@ -29,6 +31,7 @@ export const getDocuments = async (filters?: {
   author_id?: string
   search?: string
 }) => {
+  const supabase = createClient()
   let query = supabase
     .from('documents')
     .select(`
@@ -59,6 +62,7 @@ export const getDocuments = async (filters?: {
 }
 
 export const getDocument = async (id: string) => {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('documents')
     .select(`
@@ -73,6 +77,7 @@ export const getDocument = async (id: string) => {
 }
 
 export const updateDocument = async (id: string, updates: Database['public']['Tables']['documents']['Update']) => {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('documents')
     .update(updates)
@@ -85,6 +90,7 @@ export const updateDocument = async (id: string, updates: Database['public']['Ta
 }
 
 export const deleteDocument = async (id: string) => {
+  const supabase = createClient()
   const { error } = await supabase
     .from('documents')
     .delete()
@@ -94,6 +100,7 @@ export const deleteDocument = async (id: string) => {
 }
 
 export const getCategories = async () => {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('categories')
     .select('*')
@@ -104,6 +111,7 @@ export const getCategories = async () => {
 }
 
 export const createCategory = async (category: Database['public']['Tables']['categories']['Insert']) => {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('categories')
     .insert(category)
