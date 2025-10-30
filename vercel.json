@@ -3,6 +3,7 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "framework": "nextjs",
+  "nodeVersion": "18.x",
   "functions": {
     "src/app/api/**/*.ts": {
       "maxDuration": 30
