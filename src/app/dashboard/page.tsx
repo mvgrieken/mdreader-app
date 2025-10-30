@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button'
 import { DocumentList } from '@/components/documents/DocumentList'
 import { DocumentEditor } from '@/components/documents/DocumentEditor'
 import { PerformanceDashboard } from '@/components/performance/PerformanceDashboard'
+import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Document } from '@/types/database'
+import { Plus } from 'lucide-react'
 
 type View = 'list' | 'editor' | 'preview' | 'performance'
 
@@ -38,55 +40,127 @@ export default function DashboardPage() {
     setCurrentView('list')
   }
 
+  // Mock user data - in real app this would come from auth
+  const user = {
+    name: 'John Doe',
+    email: 'john@example.com'
+  }
+
+  const getPageTitle = () => {
+    switch (currentView) {
+      case 'list':
+        return 'Documents'
+      case 'editor':
+        return selectedDocument ? 'Edit Document' : 'Create Document'
+      case 'preview':
+        return 'Document Preview'
+      case 'performance':
+        return 'Performance Dashboard'
+      default:
+        return 'Dashboard'
+    }
+  }
+
+  const getPageSubtitle = () => {
+    switch (currentView) {
+      case 'list':
+        return 'Manage and organize your documents'
+      case 'editor':
+        return 'Edit your markdown document with AI assistance'
+      case 'preview':
+        return 'View document details and content'
+      case 'performance':
+        return 'Monitor application performance and metrics'
+      default:
+        return 'Welcome to MDReader'
+    }
+  }
+
+  const getBreadcrumbs = () => {
+    switch (currentView) {
+      case 'list':
+        return [
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Documents' }
+        ]
+      case 'editor':
+        return [
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Documents', href: '/dashboard' },
+          { label: selectedDocument ? 'Edit' : 'Create' }
+        ]
+      case 'preview':
+        return [
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Documents', href: '/dashboard' },
+          { label: 'Preview' }
+        ]
+      case 'performance':
+        return [
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Performance' }
+        ]
+      default:
+        return [{ label: 'Dashboard' }]
+    }
+  }
+
+  const getPageActions = () => {
+    switch (currentView) {
+      case 'list':
+        return (
+          <Button onClick={handleDocumentCreate} icon={<Plus className="w-4 h-4" />}>
+            Create Document
+          </Button>
+        )
+      case 'performance':
+        return (
+          <Button onClick={() => window.location.reload()}>
+            Refresh Metrics
+          </Button>
+        )
+      default:
+        return null
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Navigation */}
-        <div className="mb-6 flex items-center gap-4 border-b border-gray-200 pb-4">
-          <Button
-            variant={currentView === 'list' ? 'primary' : 'ghost'}
-            onClick={() => setCurrentView('list')}
-          >
-            Documents
-          </Button>
-          <Button
-            variant={currentView === 'performance' ? 'primary' : 'ghost'}
-            onClick={() => setCurrentView('performance')}
-          >
-            Performance
-          </Button>
-        </div>
+    <DashboardLayout
+      title={getPageTitle()}
+      subtitle={getPageSubtitle()}
+      breadcrumbs={getBreadcrumbs()}
+      actions={getPageActions()}
+      user={user}
+    >
+      {/* Content */}
+      {currentView === 'list' && (
+        <DocumentList
+          onDocumentSelect={handleDocumentSelect}
+          onDocumentEdit={handleDocumentEdit}
+          onDocumentCreate={handleDocumentCreate}
+        />
+      )}
 
-        {/* Content */}
-        {currentView === 'list' && (
-          <DocumentList
-            onDocumentSelect={handleDocumentSelect}
-            onDocumentEdit={handleDocumentEdit}
-            onDocumentCreate={handleDocumentCreate}
-          />
-        )}
+      {currentView === 'editor' && (
+        <DocumentEditor
+          document={selectedDocument}
+          onSave={handleDocumentSave}
+          onCancel={handleCancel}
+        />
+      )}
 
-        {currentView === 'editor' && (
-          <DocumentEditor
-            document={selectedDocument}
-            onSave={handleDocumentSave}
-            onCancel={handleCancel}
-          />
-        )}
+      {currentView === 'preview' && selectedDocument && (
+        <DocumentEditor
+          document={selectedDocument}
+          onSave={handleDocumentSave}
+          onCancel={handleCancel}
+        />
+      )}
 
-        {currentView === 'preview' && selectedDocument && (
-          <DocumentEditor
-            document={selectedDocument}
-            onSave={handleDocumentSave}
-            onCancel={handleCancel}
-          />
-        )}
-
-        {currentView === 'performance' && (
-          <PerformanceDashboard />
-        )}
-      </div>
-    </div>
+      {currentView === 'performance' && (
+        <PerformanceDashboard />
+      )}
+    </DashboardLayout>
   )
 }
 
